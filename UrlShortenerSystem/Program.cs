@@ -11,20 +11,10 @@ var builder = WebApplication.CreateBuilder(args);
 // and ConcurrentDictionary is thread-safe for concurrent reads/writes inside a process.
 builder.Services.AddSingleton<InMemoryDatabase>();
 
-// Register IDGenerator as Singleton so sequence increments are shared across requests.
-// Interview: why not Scoped? Scoped would reset sequence per request (bad for uniqueness).
-builder.Services.AddSingleton<IDGenerator>(sp =>
-{
-    // Reads config value "UrlShortener:MachineId" (from appsettings.json, env vars, etc.)
-    // Interview: why config? Enables different machine prefixes in multi-node deployments.
-    var machineIdStr = builder.Configuration["UrlShortener:MachineId"];
-
-    // Default machineId 'a' if config missing.
-    // Interview: why char? Code format is {machineId}{payload}, easy sharding/prefix routing.
-    var machineId = !string.IsNullOrWhiteSpace(machineIdStr) ? machineIdStr[0] : 'a';
-
-    return new IDGenerator(machineId);
-});
+// MachineId must be exactly 2 chars: A0..A9, B0..B9, ... Z0..Z9
+// Configure via appsettings.json/env var: MachineId=A0 (default A0 if missing)
+var machineId = builder.Configuration["MachineId"] ?? "A0";
+builder.Services.AddSingleton(new IDGenerator(machineId));
 
 // Scoped means one instance per request.
 // Interview: why scoped? UrlService can be created per request; it holds no global state,
