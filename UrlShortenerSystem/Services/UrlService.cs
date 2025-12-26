@@ -1,21 +1,19 @@
 ﻿using System;
+using System.Reflection.Emit;
 using UrlShortenerSystem.Data;
 using UrlShortenerSystem.Models;
 using UrlShortenerSystem.Utils;
 
 namespace UrlShortenerSystem.Services
 {
-    public class UrlService
+    public class UrlService(InMemoryDatabase db, IDGenerator idGenerator)
     {
-        private readonly InMemoryDatabase _db;
-        private readonly IDGenerator _idGenerator;
-
-        public UrlService(InMemoryDatabase db, IDGenerator idGenerator)
-        {
-            _db = db;
-            _idGenerator = idGenerator;
-        }
-
+        private readonly InMemoryDatabase _db = db;
+        private readonly IDGenerator _idGenerator = idGenerator;
+        //•	IDGenerator is a class defined elsewhere in your project.It is responsible for generating unique short codes.
+        //•	_idGenerator is a private field in the UrlService class. It holds a reference to an instance(object) of the IDGenerator class.
+        //•	idGenerator is a parameter passed to the UrlService constructor.
+        
         public ShortenResponse Shorten(string originalUrl, string baseDomain)
         {
             // Optional idempotency: return existing mapping for the same long URL

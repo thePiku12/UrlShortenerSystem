@@ -9,7 +9,7 @@ namespace UrlShortenerSystem.Utils
 
         public static string Encode(long value)
         {
-            if (value < 0) throw new ArgumentOutOfRangeException(nameof(value));
+            ArgumentOutOfRangeException.ThrowIfNegative(value, nameof(value));
             if (value == 0) return Alphabet[0].ToString();
 
             var sb = new StringBuilder();
