@@ -6,14 +6,9 @@ namespace UrlShortenerSystem.Controllers
 {
     [ApiController]
     [Route("url")]
-    public class UrlController : ControllerBase
+    public class UrlController(UrlService service) : ControllerBase
     {
-        private readonly UrlService _service;
-
-        public UrlController(UrlService service)
-        {
-            _service = service;
-        }
+        private readonly UrlService _service = service;
 
         [HttpPost("shorten")]
         public IActionResult Shorten([FromBody] ShortenRequest request)
