@@ -22,14 +22,11 @@ namespace UrlShortenerSystem.Controllers
         }
 
         [HttpGet("{shortCode}")]
-        public IActionResult RedirectToOriginal(string shortCode, [FromQuery] bool noRedirect = false)
+        public IActionResult RedirectToOriginal(string shortCode)
         {
             var originalUrl = _service.Resolve(shortCode);
             if (originalUrl == null)
                 return StatusCode(410, "Link expired or not found."); // 410 Gone  
-
-            if (noRedirect)
-                return Ok(new { OriginalUrl = originalUrl });
 
             return Redirect(originalUrl);
         }
