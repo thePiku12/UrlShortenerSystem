@@ -13,13 +13,19 @@ namespace UrlShortenerSystem.Utils
             if (value == 0) return Alphabet[0].ToString();
 
             var sb = new StringBuilder();
+
+            // Append digits from least-significant to most-significant.
             while (value > 0)
             {
                 var remainder = (int)(value % 62);
-                sb.Insert(0, Alphabet[remainder]);
+                sb.Append(Alphabet[remainder]); // O(1) amortized
                 value /= 62;
             }
-            return sb.ToString();
+
+            // Reverse once (cheaper than inserting at index 0 repeatedly).
+            var chars = sb.ToString().ToCharArray();
+            Array.Reverse(chars);
+            return new string(chars);
         }
     }
 }

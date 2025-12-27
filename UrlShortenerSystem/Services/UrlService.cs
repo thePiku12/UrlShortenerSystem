@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Reflection.Emit;
 using UrlShortenerSystem.Data;
 using UrlShortenerSystem.Models;
 using UrlShortenerSystem.Utils;
@@ -13,7 +12,7 @@ namespace UrlShortenerSystem.Services
         //•	IDGenerator is a class defined elsewhere in your project.It is responsible for generating unique short codes.
         //•	_idGenerator is a private field in the UrlService class. It holds a reference to an instance(object) of the IDGenerator class.
         //•	idGenerator is a parameter passed to the UrlService constructor.
-        
+
         public ShortenResponse Shorten(string originalUrl, string baseDomain)
         {
             // Optional idempotency: return existing mapping for the same long URL
@@ -26,7 +25,7 @@ namespace UrlShortenerSystem.Services
                     return new ShortenResponse
                     {
                         ShortCode = existingCode,
-                        ShortUrl = $"{baseDomain}/url/{existingCode}",
+                        ShortUrl = $"{baseDomain}/{existingCode}",
                         ExpiryDate = existingRecord.ExpiryDate
                     };
                 }
@@ -34,13 +33,12 @@ namespace UrlShortenerSystem.Services
 
             // Generate a globally-unique-ish code (per machine) and handle collisions
             const int maxAttempts = 10;
-            UrlRecord? record = null;
 
             for (var attempt = 0; attempt < maxAttempts; attempt++)
             {
                 var code = _idGenerator.GenerateCode(totalLength: 8);
 
-                record = new UrlRecord
+                var record = new UrlRecord
                 {
                     ShortCode = code,
                     OriginalUrl = originalUrl,
@@ -56,7 +54,7 @@ namespace UrlShortenerSystem.Services
                     return new ShortenResponse
                     {
                         ShortCode = code,
-                        ShortUrl = $"{baseDomain}/url/{code}",
+                        ShortUrl = $"{baseDomain}/{code}",
                         ExpiryDate = record.ExpiryDate
                     };
                 }
